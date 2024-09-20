@@ -3,9 +3,6 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import (BaseUserManager,
                                         AbstractBaseUser,
                                         PermissionsMixin)
-# from django.contrib.auth.base_user import AbstractBaseUser
-# from django.contrib.auth.base_user import BaseUserManager
-# from django.contrib.auth.models import PermissionsMixin
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.core.mail import send_mail
