@@ -1,12 +1,26 @@
 from django.db import models
-from django.core.mail import send_mail
-from django.contrib.auth.models import PermissionsMixin
-from django.contrib.auth.base_user import AbstractBaseUser
-from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
+from django.contrib.auth.models import (BaseUserManager,
+                                        AbstractBaseUser,
+                                        PermissionsMixin)
+# from django.contrib.auth.base_user import AbstractBaseUser
+# from django.contrib.auth.base_user import BaseUserManager
+# from django.contrib.auth.models import PermissionsMixin
 from django.utils import timezone
-from django.contrib.auth.base_user import BaseUserManager
-  
-  
+from django.utils.translation import gettext_lazy as _
+from django.core.mail import send_mail
+from django.conf import settings
+from django.dispatch import receiver
+
+from rest_framework.authtoken.models import Token
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created and instance is not None:
+        Token.objects.create(user=instance)
+
+
 class UserManager(BaseUserManager):
   
     use_in_migrations = True
@@ -21,54 +35,80 @@ class UserManager(BaseUserManager):
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        user.full_clean()
+
+        Token.objects.create(user=user)
+
         return user
   
     def create_user(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(email, password, **extra_fields)
+        return self._create_user(
+            email=email,
+            password=password, 
+            **extra_fields
+        )
   
     def create_superuser(self, email, password, **extra_fields):
+        extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-  
+
+        #この処理いる？
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
   
-        return self._create_user(email, password, **extra_fields)
+        return self._create_user(
+            email=email,
+            password=password, 
+            **extra_fields
+        )
   
   
 class User(AbstractBaseUser, PermissionsMixin):
   
-    email = models.EmailField(_('email address'), unique=True)
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=150, blank=True)
-  
+    email = models.EmailField(
+        verbose_name = _('email address'),
+        unique=True
+    )
+    first_name = models.CharField(
+        verbose_name = _('first name'),
+        max_length=30,
+        blank=True
+    )
+    last_name = models.CharField(
+        verbose_name = _('last name'),
+        max_length=150,
+        blank=True
+    )
     is_staff = models.BooleanField(
-        _('staff status'),
+        verbose_name = _('staff status'),
         default=False,
         help_text=_(
             'Designates whether the user can log into this admin site.'),
     )
     is_active = models.BooleanField(
-        _('active'),
+        verbose_name = _('active'),
         default=True,
         help_text=_(
             'Designates whether this user should be treated as active. '
             'Unselect this instead of deleting accounts.'
         ),
     )
-
     is_premium = models.BooleanField(
-        _('is_premium'),
+        verbose_name = _('is_premium'),
         default=False,
         help_text=_(
             'プレミアム会員かどうかを示します。'),
     )
-
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    date_joined = models.DateTimeField(
+        verbose_name = _('date joined'),
+        default=timezone.now
+    )
   
     objects = UserManager()
   
