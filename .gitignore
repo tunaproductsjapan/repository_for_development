@@ -3,6 +3,7 @@
 __pycache__/
 local_settings.py
 db.sqlite3
+static/
 
 
 # Environments
@@ -13,3 +14,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# other
+http.js

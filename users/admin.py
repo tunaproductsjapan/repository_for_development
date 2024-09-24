@@ -1,11 +1,13 @@
 from django.contrib import admin
-
-from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils.translation import gettext_lazy as _
 from .models import User
-  
+
+
+admin.site.site_header = 'tunaProducts 管理サイト'
+admin.site.index_title = 'モデルリスト'
+
   
 class MyUserChangeForm(UserChangeForm):
     class Meta:

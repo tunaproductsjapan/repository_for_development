@@ -7,10 +7,11 @@ import json
 
 from .models import User
 from .serializers import UserSerializer
+from .permissions import IsOwner
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsOwner)
