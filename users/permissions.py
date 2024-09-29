@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 class IsOwner(permissions.BasePermission):
-    def has_permission(self, request, view):
+    def is_allowed_action(self, request, view):
         if view.action == 'list':
             return False
         return True

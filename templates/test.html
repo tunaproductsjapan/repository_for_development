@@ -1,0 +1,28 @@
+<!-- templates/test.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+</head>
+<body>
+    <h2>Send DATA Test</h2>
+    <form method="post" action="{% url 'test' %}">
+        {% csrf_token %}
+        <label for="post_data">POST DATA:</label>
+        <input type="text" id="post_data" name="post_data" required><br>
+        <button type="submit">Send</button>
+    </form>
+    <h2>DATA send by you</h2>
+    <ul>
+        {% if post_data %}
+            {% for data in post_data %}
+                <p>{{ data }}</p>
+            {% endfor %}
+        {% else %}
+            <p>Please send DATA as you wish!</p>
+        {% endif %}
+    </ul>
+</body>
+</html>

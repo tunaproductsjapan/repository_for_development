@@ -18,4 +18,5 @@ env.bak/
 venv.bak/
 
 # other
+.hintrc
 http.js
