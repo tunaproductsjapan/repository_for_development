@@ -16,13 +16,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from tunaProducts.views import LoginView, RefreshView
+from tunaProducts.views import (LoginView,
+                                RefreshView,
+                                LogoutView,
+                                RegisterView,
+                                TestView,TestHTTP205View,
+                                ChangePasswordView,)
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     path('login/', LoginView.as_view(), name='login'),
     path('login/refresh/', RefreshView.as_view(), name='refresh'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('change_password/', ChangePasswordView.as_view(), name='change_password'),
+
+    path('test/', TestView.as_view(), name='test'),
+    path('test2/', TestHTTP205View.as_view(), name='test2'),
 
     path('', include('users.urls')),
 ]

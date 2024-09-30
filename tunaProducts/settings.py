@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os, sys
 from pathlib import Path
 from datetime import timedelta
+import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -51,7 +52,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'djoser',
+    # 'djoser',
     'corsheaders',
     'users.apps.UsersConfig',
 ]
@@ -92,10 +93,11 @@ WSGI_APPLICATION = 'tunaProducts.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=env('DATABASE_URL',default='sqlite:///'+os.path.join(BASE_DIR, 'db.sqlite3')),
+        conn_max_age=600,
+        conn_health_checks=True,
+    ),
 }
 
 
@@ -150,19 +152,19 @@ STATICFILES_DIRS =[
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-if env('SSL'):
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    SESSION_COOKIE_HTTPONLY = True
-    CSRF_COOKIE_AGE = timedelta(minutes=30),
-    CSRF_COOKIE_SECURE = True
-    CSRF_COOKIE_HTTPONLY = True
-    # CSRF_TRUSTED_ORIGINS = ['https://www.example.com']
-    # CSRF_COOKIE_DOMAIN = '.example.com'
-    SECURE_HSTS_SECONDS = 3600
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = env('SSL')
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = env('SSL')
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') if DEBUG else None
+
+CSRF_COOKIE_AGE = timedelta(minutes=30)
+CSRF_COOKIE_SECURE = env('SSL')
+CSRF_COOKIE_HTTPONLY = True
+# CSRF_TRUSTED_ORIGINS = ['https://www.example.com']
+# CSRF_COOKIE_DOMAIN = '.example.com'
 
 
 REST_FRAMEWORK = {
@@ -179,14 +181,10 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
-
-    # 'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
-    # 'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
-    # 'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
-    # 'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
+    "UPDATE_LAST_LOGIN": False,
 
     'ALGORITHM': env('ALGORITHM',default='HS256'),
     'SIGNING_KEY': env('SIGNING_KEY'),
@@ -194,18 +192,9 @@ SIMPLE_JWT = {
     'AUDIENCE': env('AUDIENCE',default=None),
     'ISSUER': env('ISSUER',default=None),
 
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
-
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-
-    'JTI_CLAIM': 'jti',
-
+    # setteings for cookie based jwt
     'AUTH_COOKIE': 'access_token',
+    'AUTH_REFRESH_COOKIE': 'refresh_token',
     'AUTH_COOKIE_SECURE': env('SSL'),
     'AUTH_COOKIE_HTTP_ONLY': True,
     'AUTH_COOKIE_PATH': '/',

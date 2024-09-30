@@ -5,3 +5,5 @@ class LoginThrottle(AnonRateThrottle):
 
 class RefreshThrottle(UserRateThrottle):
     rate = '50/day'
+class TestThrottle(AnonRateThrottle):
+    rate = '5/day'

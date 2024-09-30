@@ -9,14 +9,6 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.dispatch import receiver
 
-# from rest_framework.authtoken.models import Token
-
-
-# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-# def create_auth_token(sender, instance=None, created=False, **kwargs):
-#     if created and instance is not None:
-#         Token.objects.create(user=instance)
-
 
 class UserManager(BaseUserManager):
   
@@ -29,19 +21,7 @@ class UserManager(BaseUserManager):
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-        # user.full_clean()
-        # Token.objects.create(user=user)
         return user
-  
-    # def create_user(self, email, password=None, **extra_fields):
-    #     extra_fields.setdefault('is_active', True)
-    #     extra_fields.setdefault('is_staff', False)
-    #     extra_fields.setdefault('is_superuser', False)
-    #     return self._create_user(
-    #         email=email,
-    #         password=password, 
-    #         **extra_fields
-    #     )
   
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault('is_active', True)

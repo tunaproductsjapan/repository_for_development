@@ -14,28 +14,13 @@ from common.authentications import CookieBasedJWTAuthentication
 from users.models import User
 from users.serializers import UserSerializer
 from users.permissions import IsOwner
-from users.throttles import TestThrottle
 
 
 class UserViewSet(CsrfProtectedModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
     authentication_classes = [CookieBasedJWTAuthentication, ]
     permission_classes = [IsAuthenticated, IsOwner, ]
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
     lookup_field = 'email'
     lookup_value_regex = '[\w\-._]+@[\w\-._]+\.[A-Za-z]+'
-
-
-# @method_decorator(csrf_exempt, name='dispatch')
-class TestView(CsrfProtectedAPIView):
-    permission_classes = []
-    throttle_classes = [TestThrottle]
-
-    logger = logging.getLogger('tunaProducts')
-
-    def get(self, request):
-        return render(request, 'test.html')
-    
-    def post(self, request):
-        self.logger.debug('tuna debug:'+request.data['post_data'])
-        return render(request, 'test.html', context=request.data)
