@@ -4,7 +4,7 @@ from django.contrib.auth.models import (BaseUserManager,
                                         AbstractBaseUser,
                                         PermissionsMixin)
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy
 from django.core.mail import send_mail
 from django.conf import settings
 from django.dispatch import receiver
@@ -33,42 +33,42 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
   
     email = models.EmailField(
-        verbose_name = _('email address'),
-        unique=True
+        verbose_name = gettext_lazy('email address'),
+        unique=True, 
     )
     first_name = models.CharField(
-        verbose_name = _('first name'),
-        max_length=30,
-        blank=True
+        verbose_name = gettext_lazy('first name'),
+        max_length=150,
+        blank=True, 
     )
     last_name = models.CharField(
-        verbose_name = _('last name'),
+        verbose_name = gettext_lazy('last name'),
         max_length=150,
-        blank=True
+        blank=True, 
     )
     is_staff = models.BooleanField(
-        verbose_name = _('staff status'),
+        verbose_name = gettext_lazy('staff status'),
         default=False,
-        help_text=_(
+        help_text=gettext_lazy(
             'Designates whether the user can log into this admin site.'),
     )
     is_active = models.BooleanField(
-        verbose_name = _('active'),
+        verbose_name = gettext_lazy('active'),
         default=True,
-        help_text=_(
+        help_text=gettext_lazy(
             'Designates whether this user should be treated as active. '
             'Unselect this instead of deleting accounts.'
         ),
     )
     is_premium = models.BooleanField(
-        verbose_name = _('is_premium'),
+        verbose_name = gettext_lazy('is_premium'),
         default=False,
-        help_text=_(
+        help_text=gettext_lazy(
             'プレミアム会員かどうかを示します。'),
     )
     date_joined = models.DateTimeField(
-        verbose_name = _('date joined'),
-        default=timezone.now
+        verbose_name = gettext_lazy('date joined'),
+        default=timezone.now, 
     )
   
     objects = UserManager()
@@ -78,8 +78,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
   
     class Meta:
-        verbose_name = _('user')
-        verbose_name_plural = _('users')
+        verbose_name = gettext_lazy('user')
+        verbose_name_plural = gettext_lazy('users')
   
     def get_full_name(self):
         """Return the first_name plus the last_name, with a space in

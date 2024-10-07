@@ -23,7 +23,6 @@ from tunaProducts.views import (LoginView,
                                 TestView,TestHTTP205View,
                                 ChangePasswordView,)
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
 
